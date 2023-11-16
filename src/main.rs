@@ -1,8 +1,15 @@
 #[macro_use] extern crate rocket;
 
-#[get("/")]
-fn index() -> &'static str {
-    "Hello, world!"
+use rocket::response::{status::NotFound, Redirect};
+
+
+#[get("/redirect/<path>")]
+fn index(path: &str) -> Result<Redirect, NotFound<String>>{
+    if path != "git" {
+        return Err(NotFound(format!("Golink for {} not found", path)));
+    }
+
+    return Ok(Redirect::to(uri!("https://github.com")));
 }
 
 #[launch]
