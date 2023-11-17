@@ -16,7 +16,7 @@ fn index(path: &str) -> Result<Redirect, NotFound<String>>{
     let routes = unsafe { & *ROUTES.lock().unwrap() };
     match routes.get(path) {
         Some(value) => {
-            return Ok(Redirect::to(*value));
+            return Ok(Redirect::temporary(*value));
         },
         None => return Err(NotFound(format!("Golink for {} not found", path))),
     }
