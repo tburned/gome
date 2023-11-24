@@ -1,0 +1,3 @@
+name: gome
+runtime: nodejs
+description: Typescript program for deploying Gome
