@@ -1,7 +1,7 @@
 #[macro_use] extern crate rocket;
 
 use rocket::response::{status::NotFound, Redirect};
-use std::{sync::Mutex, collections::HashMap};
+use std::{collections::HashMap, path::PathBuf, sync::Mutex};
 use once_cell::sync::Lazy;
 
 static mut ROUTES: Lazy<Mutex<HashMap<&str, &'static str>>> = Lazy::new(|| {
@@ -10,9 +10,15 @@ static mut ROUTES: Lazy<Mutex<HashMap<&str, &'static str>>> = Lazy::new(|| {
     Mutex::new(routes)
 });
 
+#[get("/<path..>", rank = 2)]
+fn index(path: PathBuf) -> Redirect {
+    let path_string = path.to_str().unwrap();
+    return Redirect::temporary(format!("/redirect/{path_string}"));
+}
 
-#[get("/redirect/<path>")]
-fn index(path: &str) -> Result<Redirect, NotFound<String>>{
+
+#[get("/redirect/<path>", rank = 1)]
+fn redirect(path: &str) -> Result<Redirect, NotFound<String>>{
     let routes = unsafe { & *ROUTES.lock().unwrap() };
     match routes.get(path) {
         Some(value) => {
@@ -24,6 +30,6 @@ fn index(path: &str) -> Result<Redirect, NotFound<String>>{
 
 #[launch]
 fn rocket() -> _ {
-    rocket::build().mount("/", routes![index])
+    rocket::build().mount("/", routes![redirect, index])
 }
 
