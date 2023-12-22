@@ -1,0 +1,4 @@
+config:
+  gome:isMinikube: "true"
+  gome:namespace: default
+  gome:replicas: "1"
